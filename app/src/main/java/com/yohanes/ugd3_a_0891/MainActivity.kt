@@ -1,12 +1,11 @@
 package com.yohanes.ugd3_a_0891
 
+import android.content.DialogInterface
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
-import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
-import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 
 class MainActivity : AppCompatActivity() {
@@ -22,6 +21,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        var syarat = false
 
         supportActionBar?.hide()
 
@@ -31,6 +31,7 @@ class MainActivity : AppCompatActivity() {
 
         if(intent.getBundleExtra("register") != null){
             getBundle()
+            syarat = true
         }
 
         val btnLogin: Button = findViewById(R.id.btnLogin)
@@ -45,6 +46,18 @@ class MainActivity : AppCompatActivity() {
             var checkLogin = false
             val username: String = inputUsername.getEditText()?.getText().toString()
             val password: String = inputPassword.getEditText()?.getText().toString()
+
+            if(!syarat){
+                val builder: AlertDialog.Builder  = AlertDialog.Builder(this@MainActivity);
+                builder.setMessage("Buat Akun Terlebih Dahulu")
+                builder.setTitle("Error Message...")
+                    .setPositiveButton("YES", object : DialogInterface.OnClickListener{
+                        override fun onClick(dialogInterface: DialogInterface, i: Int){
+                        }
+                    })
+                    .show()
+                return@setOnClickListener
+            }
 
             if(username.isEmpty()) {
                 inputUsername.setError("Username must be filled with text")
