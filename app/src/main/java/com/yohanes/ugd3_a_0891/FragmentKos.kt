@@ -8,13 +8,19 @@ import android.view.ViewGroup
 import com.google.android.material.transition.MaterialFadeThrough
 
 class FragmentKos : Fragment(R.layout.fragment_kos) {
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        exitTransition = MaterialFadeThrough()
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.fragment_kos, container, false)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val layoutManager = LinearLayoutManager(context)
+        val adapter : rvKosAdapter = rvKosAdapter(Kos.listofKos)
 
+        val rvKos : RecyclerView = view.findViewById(R.id.rv_kos)
+
+        rvKos.layoutManager = layoutManager
+        rvKos.setHasFixedSize(true)
+        rvKos.adapter = adapter
+    }
 }
