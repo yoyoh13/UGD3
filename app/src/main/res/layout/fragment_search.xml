@@ -3,7 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+<<<<<<< HEAD
     tools:context=".fragment.FragmentSearch">
+=======
+    tools:context=".FragmentSearch">
+>>>>>>> 9d87528 (Initial commit)
 
     <TextView
         android:layout_gravity="center"
