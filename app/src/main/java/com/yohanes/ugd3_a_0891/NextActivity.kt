@@ -1,6 +1,7 @@
 package com.yohanes.ugd3_a_0891
 
 import android.app.DatePickerDialog
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.room.Room
@@ -20,10 +21,11 @@ class NextActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         binding = ActivityNextBinding.inflate(layoutInflater)
         val view = binding?.root
         setContentView(view)
-
+        setContentView(R.layout.activity_next)
         val myCalendar = Calendar.getInstance()
 
         val datePicker = DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
@@ -41,7 +43,7 @@ class NextActivity : AppCompatActivity() {
 
 
 
-        db = Room.databaseBuilder(applicationContext, UserDB::class.java, "pasien-db").build()
+        db = Room.databaseBuilder(applicationContext, UserDB::class.java, "user-db").build()
         binding?.btnRegister!!.setOnClickListener {
             CoroutineScope(Dispatchers.IO).launch {
                 db.userDao().addUser(
@@ -56,6 +58,16 @@ class NextActivity : AppCompatActivity() {
                 )
                 finish()
             }
+
+            val intent = Intent(this, MainActivity::class.java)
+            val mBundle = Bundle()
+
+            mBundle.putString("username", binding!!.inputLayoutUsername.getEditText()?.getText().toString())
+            mBundle.putString("password", binding!!.inputLayoutPassword.getEditText()?.getText().toString())
+
+            intent.putExtra("register", mBundle)
+            startActivity(intent)
+
         }
 
     }

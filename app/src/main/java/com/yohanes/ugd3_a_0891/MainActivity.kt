@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AlertDialog
 import com.google.android.material.textfield.TextInputLayout
+import com.yohanes.ugd3_a_0891.fragment.FragmentProfile
 
 class MainActivity : AppCompatActivity() {
 
@@ -83,8 +84,12 @@ class MainActivity : AppCompatActivity() {
 
 
             if(!checkLogin) return@setOnClickListener
-            val moveHome = Intent(this@MainActivity, HomeActivity::class.java)
-            startActivity(moveHome)
+            val moveHome = Intent(this, FragmentProfile::class.java)
+            val mBundle = Bundle()
+
+            mBundle.putString("username", username)
+            intent.putExtra("login", mBundle)
+            startActivity(intent)
         }
 
 
