@@ -18,6 +18,9 @@ class NextActivity : AppCompatActivity() {
 
     private var binding: ActivityNextBinding? = null
     private lateinit var db: UserDB
+    
+    private val registerNotification = "register_notification"
+    private val regNotivication = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,6 +30,8 @@ class NextActivity : AppCompatActivity() {
         setContentView(view)
         setContentView(R.layout.activity_next)
         val myCalendar = Calendar.getInstance()
+        
+        createRegNotification()
 
         val datePicker = DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
             myCalendar.set(Calendar.YEAR, year)
@@ -81,5 +86,36 @@ class NextActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         binding = null
+    }
+    
+    private fun createRegNotification(){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = "Notification Title"
+            val descriptionText = "Notification Description"
+
+            val registNotification = NotificationChannel(
+                registerNotification,
+                name,
+                NotificationManager.IMPORTANCE_DEFAULT
+            ).apply {
+                description = descriptionText
+            }
+
+            val notificationManager: NotificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(registNotification)
+        }
+    }
+
+    private fun sendRegNotification(){
+
+        val builder = NotificationCompat.Builder(this, registerNotification)
+            .setSmallIcon(R.drawable.ic_user_24)
+            .setContentTitle(binding?.tietUsername?.text.toString())
+            .setPriority(NotificationCompat. PRIORITY_LOW)
+
+        with(NotificationManagerCompat.from(this)){
+            notify(regNotivication, builder.build())
+        }
     }
 }
