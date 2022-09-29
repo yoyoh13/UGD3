@@ -4,37 +4,28 @@ import android.app.DatePickerDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Button
-import com.google.android.material.textfield.TextInputLayout
+import androidx.room.Room
+import com.yohanes.ugd3_a_0891.databinding.ActivityNextBinding
+import com.yohanes.ugd3_a_0891.room.UserDB
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
+import com.yohanes.ugd3_a_0891.room.User as User
 
 class NextActivity : AppCompatActivity() {
 
-    private lateinit var inputUsername: TextInputLayout
-    private lateinit var inputPassword: TextInputLayout
-    private lateinit var inputEmail: TextInputLayout
-    private lateinit var inputTanggalLahir: TextInputLayout
-    private lateinit var inputTelepon: TextInputLayout
-    private lateinit var inputAlamat: TextInputLayout
+    private var binding: ActivityNextBinding? = null
+    private lateinit var db: UserDB
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        binding = ActivityNextBinding.inflate(layoutInflater)
+        val view = binding?.root
+        setContentView(view)
         setContentView(R.layout.activity_next)
-
-        supportActionBar?.hide()
-
-        inputUsername = findViewById(R.id.inputLayoutUsername)
-        inputPassword = findViewById(R.id.inputLayoutPassword)
-        inputEmail = findViewById(R.id.inputLayoutEmail)
-        inputTanggalLahir = findViewById(R.id.inputLayoutTanggal)
-        inputTelepon = findViewById(R.id.inputLayoutTelepon)
-        inputAlamat = findViewById(R.id.inputLayoutAlamat)
-
-        inputTanggalLahir.getEditText()?.setFocusable(false)
-
-        val btnRegister: Button = findViewById(R.id.btnRegister)
-
         val myCalendar = Calendar.getInstance()
 
         val datePicker = DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
@@ -44,74 +35,51 @@ class NextActivity : AppCompatActivity() {
             updateLable(myCalendar)
         }
 
-        inputTanggalLahir.getEditText()?.setOnClickListener {
+        binding!!.inputLayoutTanggal.getEditText()?.setOnClickListener {
             DatePickerDialog (this, datePicker, myCalendar.get(Calendar.YEAR),
                 myCalendar.get((Calendar.MONTH)),
-                    myCalendar.get(Calendar.DAY_OF_MONTH)).show()
+                myCalendar.get(Calendar.DAY_OF_MONTH)).show()
         }
 
-        btnRegister.setOnClickListener {
+
+
+        db = Room.databaseBuilder(applicationContext, UserDB::class.java, "user-db").build()
+        binding!!.btnRegister?.setOnClickListener {
+                CoroutineScope(Dispatchers.IO).launch {
+                    db.userDao().addUser(
+                        User(0,
+                            binding!!.inputLayoutUsername.getEditText()?.getText().toString(),
+                            binding!!.inputLayoutPassword.getEditText()?.getText().toString(),
+                            binding!!.inputLayoutEmail.getEditText()?.getText().toString(),
+                            binding!!.inputLayoutTanggal.getEditText()?.getText().toString(),
+                            binding!!.inputLayoutTelepon.getEditText()?.getText().toString(),
+                            binding!!.inputLayoutAlamat.getEditText()?.getText().toString()
+                        )
+                    )
+                    finish()
+                }
+
             val intent = Intent(this, MainActivity::class.java)
             val mBundle = Bundle()
 
-            val username: String = inputUsername.getEditText()?.getText().toString()
-            val password: String = inputPassword.getEditText()?.getText().toString()
-            val email: String = inputEmail.getEditText()?.getText().toString()
-            val tanggalLahir: String = inputTanggalLahir.getEditText()?.getText().toString()
-            val telepon: String = inputTelepon.getEditText()?.getText().toString()
-            val alamat: String = inputAlamat.getEditText()?.getText().toString()
-
-            var checkRegister = false
-
-            if (username.isEmpty()){
-                inputUsername.setError("Username must be filled with text")
-                checkRegister = false
-            }
-
-            if(password.isEmpty()) {
-                inputPassword.setError("Password must be filled with text")
-                checkRegister = false
-            }
-
-            if(email.isEmpty()) {
-                inputEmail.setError("Email must be filled with text")
-                checkRegister = false
-            }
-
-            if(tanggalLahir.isEmpty()) {
-                inputTanggalLahir.setError("Tanggal Lahir must be filled with text")
-                checkRegister = false
-            }
-
-            if(telepon.isEmpty()) {
-                inputTelepon.setError("Telepon must be filled with text")
-                checkRegister = false
-            }
-
-            if(alamat.isEmpty()) {
-                inputAlamat.setError("Alamat must be filled with text")
-                checkRegister = false
-            }
-
-            if (username.isNotEmpty() && password.isNotEmpty() && email.isNotEmpty() &&
-                tanggalLahir.isNotEmpty() && telepon.isNotEmpty() && alamat.isNotEmpty())
-                checkRegister = true
-
-            if (!checkRegister) return@setOnClickListener
-
-            mBundle.putString("username", username)
-            mBundle.putString("password", password)
+            mBundle.putString("username", binding!!.inputLayoutUsername.getEditText()?.getText().toString())
+            mBundle.putString("password", binding!!.inputLayoutPassword.getEditText()?.getText().toString())
 
             intent.putExtra("register", mBundle)
             startActivity(intent)
+
         }
 
     }
 
-
     fun updateLable(myCalendar: Calendar) {
         val myFormat = "dd/mm/yyyy"
         val sdf = SimpleDateFormat(myFormat, Locale.UK)
-        inputTanggalLahir.getEditText()?.setText(sdf.format((myCalendar.time)))
+        binding!!.inputLayoutTanggal.getEditText()?.setText(sdf.format((myCalendar.time)))
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        binding = null
     }
 }
