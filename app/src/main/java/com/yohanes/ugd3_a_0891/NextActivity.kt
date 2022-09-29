@@ -74,6 +74,7 @@ class NextActivity : AppCompatActivity() {
             startActivity(intent)
 
         }
+        sendRegNotification()
 
     }
 
