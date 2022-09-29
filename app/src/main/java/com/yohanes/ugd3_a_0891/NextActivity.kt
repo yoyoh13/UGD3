@@ -44,20 +44,20 @@ class NextActivity : AppCompatActivity() {
 
 
         db = Room.databaseBuilder(applicationContext, UserDB::class.java, "user-db").build()
-        binding?.btnRegister!!.setOnClickListener {
-            CoroutineScope(Dispatchers.IO).launch {
-                db.userDao().addUser(
-                    User(0,
-                        binding!!.inputLayoutUsername.getEditText()?.getText().toString(),
-                        binding!!.inputLayoutPassword.getEditText()?.getText().toString(),
-                        binding!!.inputLayoutEmail.getEditText()?.getText().toString(),
-                        binding!!.inputLayoutTanggal.getEditText()?.getText().toString(),
-                        binding!!.inputLayoutTelepon.getEditText()?.getText().toString(),
-                        binding!!.inputLayoutAlamat.getEditText()?.getText().toString()
+        binding!!.btnRegister?.setOnClickListener {
+                CoroutineScope(Dispatchers.IO).launch {
+                    db.userDao().addUser(
+                        User(0,
+                            binding!!.inputLayoutUsername.getEditText()?.getText().toString(),
+                            binding!!.inputLayoutPassword.getEditText()?.getText().toString(),
+                            binding!!.inputLayoutEmail.getEditText()?.getText().toString(),
+                            binding!!.inputLayoutTanggal.getEditText()?.getText().toString(),
+                            binding!!.inputLayoutTelepon.getEditText()?.getText().toString(),
+                            binding!!.inputLayoutAlamat.getEditText()?.getText().toString()
+                        )
                     )
-                )
-                finish()
-            }
+                    finish()
+                }
 
             val intent = Intent(this, MainActivity::class.java)
             val mBundle = Bundle()
