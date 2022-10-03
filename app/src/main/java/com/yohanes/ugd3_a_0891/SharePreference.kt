@@ -1,11 +1,10 @@
 package com.yohanes.ugd3_a_0891
 
-import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.yohanes.ugd3_a_0891.room.User
 
-class SharePreference(var context: Context?) {
+class SharePreference(var context: MainActivity) {
     val PRIVATE_MODE = 0
 
     private val PREF_NAME = "SharedPreferences"

@@ -62,11 +62,11 @@
         android:layout_gravity="center">
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnRegister"
+            android:id="@+id/btnEdit"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="Registrasi" />
+            android:text="Edit Profile" />
 
     </LinearLayout>
 

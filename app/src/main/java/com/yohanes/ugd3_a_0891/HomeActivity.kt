@@ -1,5 +1,6 @@
 package com.yohanes.ugd3_a_0891
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
@@ -9,12 +10,15 @@ import com.yohanes.ugd3_a_0891.fragment.*
 
 class HomeActivity : AppCompatActivity() {
 
+    lateinit var mBundle: Bundle
+
+    lateinit var vUsername: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
 
-
+        getBundle()
 
         setCurrentFragment(FragmentSearch())
         val bottomMenu: BottomNavigationView = findViewById(R.id.bottomMenu)
@@ -32,11 +36,17 @@ class HomeActivity : AppCompatActivity() {
 
     }
 
-
-
-
     fun setCurrentFragment(fragment: Fragment?) {
-        if (fragment != null){
+        if (fragment == FragmentProfile()){
+            val mBundle = Bundle()
+            mBundle.putString("username",vUsername)
+            fragment.arguments = mBundle
+            getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.layout_fragment,fragment)
+                .commit()
+
+        } else if (fragment != null){
             getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.layout_fragment,fragment)
@@ -47,6 +57,12 @@ class HomeActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         return super.onCreateOptionsMenu(menu)
         menuInflater.inflate(R.menu.home_menu, menu)
+    }
+
+    fun getBundle(){
+        mBundle = intent.getBundleExtra("login")!!
+
+        vUsername = mBundle.getString("username")!!
     }
 
 }

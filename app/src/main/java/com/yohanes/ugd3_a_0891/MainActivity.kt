@@ -3,7 +3,9 @@ package com.yohanes.ugd3_a_0891
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
+import androidx.room.Room
 import com.google.android.material.textfield.TextInputLayout
 import com.yohanes.ugd3_a_0891.room.UserDB
 import kotlinx.coroutines.CoroutineScope
@@ -18,8 +20,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var db: UserDB
 
-    private lateinit var sharePreference: SharePreference
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -28,7 +28,6 @@ class MainActivity : AppCompatActivity() {
 
         inputUsername = findViewById(R.id.inputLayoutUsername)
         inputPassword = findViewById(R.id.inputLayoutPassword)
-
 
         val btnLogin: Button = findViewById(R.id.btnLogin)
         val btnRegister: Button = findViewById(R.id.btnRegister)
@@ -39,7 +38,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         btnLogin.setOnClickListener {
-            var checkLogin = false
+            var checkLogin = true
             val username: String = inputUsername.getEditText()?.getText().toString()
             val password: String = inputPassword.getEditText()?.getText().toString()
 
@@ -52,19 +51,26 @@ class MainActivity : AppCompatActivity() {
                 inputPassword.setError("Password must be filled with text")
                 checkLogin = false
             }
-            if(!checkLogin) return@setOnClickListener
 
+
+            if(!checkLogin) return@setOnClickListener
+            db = Room.databaseBuilder(applicationContext, UserDB::class.java, "user.db").build()
             CoroutineScope(Dispatchers.IO).launch {
                 val user = db.userDao().getUser(username)
 
                 if (user == null) {
-                    inputUsername.setError("Username tidak ditemukan")
-                } else if(user.password == password) {
-
                     withContext(Dispatchers.Main) {
+                        inputUsername.setError("Username tidak ditemukan")
+                    }
+
+                } else if(user.password == password) {
+                    Log.d("LoginActivity", "USER FOUND")
+                    withContext(Dispatchers.Main) {
+                        val mBundle = Bundle()
+                        mBundle.putString("username",username)
                         val moveHome = Intent(this@MainActivity, HomeActivity::class.java)
+                        moveHome.putExtra("login",mBundle)
                         startActivity(moveHome)
-                        sharePreference.setUser(user)
 
                     }
                 } else {

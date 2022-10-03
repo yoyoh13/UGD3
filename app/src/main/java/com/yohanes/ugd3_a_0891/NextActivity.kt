@@ -52,7 +52,7 @@ class NextActivity : AppCompatActivity() {
 
 
 
-        db = Room.databaseBuilder(applicationContext, UserDB::class.java, "user-db").build()
+        db = Room.databaseBuilder(applicationContext, UserDB::class.java, "user.db").build()
         binding!!.btnRegister?.setOnClickListener {
             CoroutineScope(Dispatchers.IO).launch {
                 db.userDao().addUser(
