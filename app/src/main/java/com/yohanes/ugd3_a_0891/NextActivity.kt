@@ -1,9 +1,14 @@
 package com.yohanes.ugd3_a_0891
 
 import android.app.DatePickerDialog
-import android.content.Intent
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.room.Room
 import com.yohanes.ugd3_a_0891.databinding.ActivityNextBinding
 import com.yohanes.ugd3_a_0891.room.UserDB
@@ -18,7 +23,7 @@ class NextActivity : AppCompatActivity() {
 
     private var binding: ActivityNextBinding? = null
     private lateinit var db: UserDB
-    
+
     private val registerNotification = "register_notification"
     private val regNotivication = 1
 
@@ -26,11 +31,10 @@ class NextActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         binding = ActivityNextBinding.inflate(layoutInflater)
-        val view = binding?.root
+        val view = binding!!.root
         setContentView(view)
-        setContentView(R.layout.activity_next)
         val myCalendar = Calendar.getInstance()
-        
+
         createRegNotification()
 
         val datePicker = DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
@@ -50,28 +54,19 @@ class NextActivity : AppCompatActivity() {
 
         db = Room.databaseBuilder(applicationContext, UserDB::class.java, "user-db").build()
         binding!!.btnRegister?.setOnClickListener {
-                CoroutineScope(Dispatchers.IO).launch {
-                    db.userDao().addUser(
-                        User(0,
-                            binding!!.inputLayoutUsername.getEditText()?.getText().toString(),
-                            binding!!.inputLayoutPassword.getEditText()?.getText().toString(),
-                            binding!!.inputLayoutEmail.getEditText()?.getText().toString(),
-                            binding!!.inputLayoutTanggal.getEditText()?.getText().toString(),
-                            binding!!.inputLayoutTelepon.getEditText()?.getText().toString(),
-                            binding!!.inputLayoutAlamat.getEditText()?.getText().toString()
-                        )
+            CoroutineScope(Dispatchers.IO).launch {
+                db.userDao().addUser(
+                    User(0,
+                        binding!!.inputLayoutUsername.getEditText()?.getText().toString(),
+                        binding!!.inputLayoutPassword.getEditText()?.getText().toString(),
+                        binding!!.inputLayoutEmail.getEditText()?.getText().toString(),
+                        binding!!.inputLayoutTanggal.getEditText()?.getText().toString(),
+                        binding!!.inputLayoutTelepon.getEditText()?.getText().toString(),
+                        binding!!.inputLayoutAlamat.getEditText()?.getText().toString()
                     )
-                    finish()
-                }
-
-            val intent = Intent(this, MainActivity::class.java)
-            val mBundle = Bundle()
-
-            mBundle.putString("username", binding!!.inputLayoutUsername.getEditText()?.getText().toString())
-            mBundle.putString("password", binding!!.inputLayoutPassword.getEditText()?.getText().toString())
-
-            intent.putExtra("register", mBundle)
-            startActivity(intent)
+                )
+                finish()
+            }
 
         }
         sendRegNotification()
@@ -88,7 +83,7 @@ class NextActivity : AppCompatActivity() {
         super.onDestroy()
         binding = null
     }
-    
+
     private fun createRegNotification(){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = "Notification Title"

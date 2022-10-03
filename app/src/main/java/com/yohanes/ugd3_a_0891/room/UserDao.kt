@@ -13,5 +13,5 @@ interface UserDao {
     @Query("SELECT * FROM user")
     suspend fun getUser() : List<User>
     @Query("SELECT * FROM user WHERE username LIKE :username")
-    fun getUser(username: String) : List<User>
+    fun getUser(username: String) : User
 }

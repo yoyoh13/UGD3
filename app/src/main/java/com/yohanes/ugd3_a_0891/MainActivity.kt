@@ -1,39 +1,34 @@
 package com.yohanes.ugd3_a_0891
 
-import android.content.DialogInterface
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
-import androidx.appcompat.app.AlertDialog
 import com.google.android.material.textfield.TextInputLayout
-import com.yohanes.ugd3_a_0891.fragment.FragmentProfile
+import com.yohanes.ugd3_a_0891.room.UserDB
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var inputUsername: TextInputLayout
     private lateinit var inputPassword: TextInputLayout
 
-    lateinit var mBundle: Bundle
+    private lateinit var db: UserDB
 
-    lateinit var vUsername: String
-    lateinit var vPassword: String
+    private lateinit var sharePreference: SharePreference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        var syarat = false
 
         supportActionBar?.hide()
 
         inputUsername = findViewById(R.id.inputLayoutUsername)
         inputPassword = findViewById(R.id.inputLayoutPassword)
 
-
-        if(intent.getBundleExtra("register") != null){
-            getBundle()
-            syarat = true
-        }
 
         val btnLogin: Button = findViewById(R.id.btnLogin)
         val btnRegister: Button = findViewById(R.id.btnRegister)
@@ -48,18 +43,6 @@ class MainActivity : AppCompatActivity() {
             val username: String = inputUsername.getEditText()?.getText().toString()
             val password: String = inputPassword.getEditText()?.getText().toString()
 
-            if(!syarat){
-                val builder: AlertDialog.Builder  = AlertDialog.Builder(this@MainActivity);
-                builder.setMessage("Buat Akun Terlebih Dahulu")
-                builder.setTitle("Error Message...")
-                    .setPositiveButton("YES", object : DialogInterface.OnClickListener{
-                        override fun onClick(dialogInterface: DialogInterface, i: Int){
-                        }
-                    })
-                    .show()
-                return@setOnClickListener
-            }
-
             if(username.isEmpty()) {
                 inputUsername.setError("Username must be filled with text")
                 checkLogin = false
@@ -69,38 +52,28 @@ class MainActivity : AppCompatActivity() {
                 inputPassword.setError("Password must be filled with text")
                 checkLogin = false
             }
-
-            if (username !=vUsername){
-                inputUsername.setError("Username not found")
-                checkLogin = false
-            }
-
-            if (password !=password){
-                inputPassword.setError("Wrong password")
-                checkLogin = false
-            }
-
-            if(username == vUsername && password == vPassword) checkLogin = true
-
-
             if(!checkLogin) return@setOnClickListener
-            val moveHome = Intent(this, FragmentProfile::class.java)
-            val mBundle = Bundle()
 
-            mBundle.putString("username", username)
-            intent.putExtra("login", mBundle)
-            startActivity(intent)
+            CoroutineScope(Dispatchers.IO).launch {
+                val user = db.userDao().getUser(username)
+
+                if (user == null) {
+                    inputUsername.setError("Username tidak ditemukan")
+                } else if(user.password == password) {
+
+                    withContext(Dispatchers.Main) {
+                        val moveHome = Intent(this@MainActivity, HomeActivity::class.java)
+                        startActivity(moveHome)
+                        sharePreference.setUser(user)
+
+                    }
+                } else {
+                    inputPassword.setError("Password salah")
+                }
+            }
         }
 
 
 
-    }
-    fun getBundle() {
-        mBundle = intent.getBundleExtra("register")!!
-
-        vUsername = mBundle.getString("username")!!
-        vPassword = mBundle.getString("password")!!
-
-        inputUsername.getEditText()?.setText(vUsername)
     }
 }
