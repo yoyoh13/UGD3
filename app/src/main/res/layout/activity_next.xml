@@ -72,6 +72,7 @@
                     android:hint="Password"
                     app:errorEnabled="true">
                     <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/tietPassword"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="textPassword" />
@@ -83,7 +84,9 @@
                     android:layout_height="wrap_content"
                     android:hint="Email"
                     app:errorEnabled="true">
+
                     <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/tietEmail"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="textEmailAddress" />
@@ -98,6 +101,7 @@
                     app:errorEnabled="true"
                     >
                     <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/tietTgl"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="date"
@@ -112,6 +116,7 @@
                     android:hint="Nomor Telepon"
                     app:errorEnabled="true">
                     <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/tietTelp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="phone"/>
@@ -126,6 +131,7 @@
                     app:errorEnabled="true"
                     android:scrollbars="vertical">
                     <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/tietAlamat"
                         android:layout_width="match_parent"
                         android:layout_height="90dp"
                         android:inputType="textPostalAddress"/>

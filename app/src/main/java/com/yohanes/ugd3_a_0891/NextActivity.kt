@@ -7,9 +7,15 @@ import android.content.Context
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import android.view.WindowManager
+import android.widget.EditText
+import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.room.Room
+import com.google.android.material.textfield.TextInputLayout
 import com.yohanes.ugd3_a_0891.databinding.ActivityNextBinding
 import com.yohanes.ugd3_a_0891.room.UserDB
 import kotlinx.coroutines.CoroutineScope
@@ -26,6 +32,14 @@ class NextActivity : AppCompatActivity() {
 
     private val registerNotification = "register_notification"
     private val regNotivication = 1
+
+    private lateinit var inputLayoutUsername: TextInputLayout
+    private lateinit var inputLayoutPassword: TextInputLayout
+    private lateinit var inputLayoutEmail: TextInputLayout
+    private lateinit var inputLayoutTanggal: TextInputLayout
+    private lateinit var inputLayoutTelepon: TextInputLayout
+    private lateinit var inputLayoutAlamat: TextInputLayout
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,26 +64,72 @@ class NextActivity : AppCompatActivity() {
                 myCalendar.get(Calendar.DAY_OF_MONTH)).show()
         }
 
+        inputLayoutUsername = findViewById(R.id.inputLayoutUsername)
+        inputLayoutPassword = findViewById(R.id.inputLayoutPassword)
+        inputLayoutEmail = findViewById(R.id.inputLayoutEmail)
+        inputLayoutTanggal = findViewById(R.id.inputLayoutTanggal)
+        inputLayoutTelepon = findViewById(R.id.inputLayoutTelepon)
+        inputLayoutAlamat = findViewById(R.id.inputLayoutAlamat)
 
 
-        db = Room.databaseBuilder(applicationContext, UserDB::class.java, "user.db").build()
-        binding!!.btnRegister?.setOnClickListener {
-            CoroutineScope(Dispatchers.IO).launch {
-                db.userDao().addUser(
-                    User(0,
-                        binding!!.inputLayoutUsername.getEditText()?.getText().toString(),
-                        binding!!.inputLayoutPassword.getEditText()?.getText().toString(),
-                        binding!!.inputLayoutEmail.getEditText()?.getText().toString(),
-                        binding!!.inputLayoutTanggal.getEditText()?.getText().toString(),
-                        binding!!.inputLayoutTelepon.getEditText()?.getText().toString(),
-                        binding!!.inputLayoutAlamat.getEditText()?.getText().toString()
-                    )
-                )
-                finish()
+
+
+            db = Room.databaseBuilder(applicationContext, UserDB::class.java, "user.db").build()
+            binding!!.btnRegister?.setOnClickListener {
+                var checkRegs = true
+                val username: String = inputLayoutUsername.getEditText()?.getText().toString()
+                val password: String = inputLayoutPassword.getEditText()?.getText().toString()
+                val email: String = inputLayoutEmail.getEditText()?.getText().toString()
+                val tanggal: String = inputLayoutTanggal.getEditText()?.getText().toString()
+                val telp: String = inputLayoutTelepon.getEditText()?.getText().toString()
+                val alamat: String = inputLayoutAlamat.getEditText()?.getText().toString()
+
+                if(username.isEmpty()){
+                    inputLayoutUsername.setError("Username tidak boleh kosong")
+                    checkRegs = false
+                }
+                if(password.isEmpty()){
+                    inputLayoutPassword.setError("Password tidak boleh kosong")
+                    checkRegs = false
+                }
+                if(email.isEmpty()){
+                    inputLayoutEmail.setError("Email tidak boleh kosong")
+                    checkRegs = false
+                }
+                if(tanggal.isEmpty()){
+                    inputLayoutTanggal.setError("Tanggal tidak boleh kosong")
+                    checkRegs = false
+                }
+                if(telp.isEmpty()){
+                    inputLayoutTelepon.setError("No Telp tidak boleh kosong")
+                    checkRegs = false
+                }
+                if(alamat.isEmpty()){
+                    inputLayoutAlamat.setError("Alamat tidak boleh kosong")
+                    checkRegs = false
+                }
+
+                if(!checkRegs) return@setOnClickListener
+
+                    CoroutineScope(Dispatchers.IO).launch {
+                        db.userDao().addUser(
+                            User(0,
+                                binding!!.inputLayoutUsername.getEditText()?.getText().toString(),
+                                binding!!.inputLayoutPassword.getEditText()?.getText().toString(),
+                                binding!!.inputLayoutEmail.getEditText()?.getText().toString(),
+                                binding!!.inputLayoutTanggal.getEditText()?.getText().toString(),
+                                binding!!.inputLayoutTelepon.getEditText()?.getText().toString(),
+                                binding!!.inputLayoutAlamat.getEditText()?.getText().toString()
+                            )
+                        )
+                        finish()
+                    }
+
+
+
             }
+            sendRegNotification()
 
-        }
-        sendRegNotification()
 
     }
 
@@ -114,4 +174,5 @@ class NextActivity : AppCompatActivity() {
             notify(regNotivication, builder.build())
         }
     }
+
 }
