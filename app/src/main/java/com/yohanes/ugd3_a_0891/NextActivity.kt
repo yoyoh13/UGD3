@@ -108,9 +108,7 @@ class NextActivity : AppCompatActivity() {
                     inputLayoutAlamat.setError("Alamat tidak boleh kosong")
                     checkRegs = false
                 }
-
                 if(!checkRegs) return@setOnClickListener
-
                     CoroutineScope(Dispatchers.IO).launch {
                         db.userDao().addUser(
                             User(0,
@@ -124,13 +122,8 @@ class NextActivity : AppCompatActivity() {
                         )
                         finish()
                     }
-
-
-
             }
             sendRegNotification()
-
-
     }
 
     fun updateLable(myCalendar: Calendar) {

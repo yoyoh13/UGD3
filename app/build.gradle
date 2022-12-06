@@ -65,17 +65,13 @@ dependencies {
     //UGD Library
     //Circle Image View
     implementation 'de.hdodenhof:circleimageview:3.1.0'
-    
     //PDF Library IText
     implementation 'com.itextpdf:itext7-core:7.1.13'
-
     //QR Code Scanner
     implementation 'com.github.yuriy-budiyev:code-scanner:2.3.2'
-
     //QR Code GENERATE
     implementation 'com.github.kenglxn.qrgen:android:2.6.0'
     implementation 'com.google.mlkit:barcode-scanning:17.0.2'
-
     //PDF Library OpenPDF
     implementation 'com.github.librepdf:openpdf:1.3.29'
 
