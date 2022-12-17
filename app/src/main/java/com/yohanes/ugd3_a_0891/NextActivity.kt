@@ -74,56 +74,56 @@ class NextActivity : AppCompatActivity() {
 
 
 
-            db = Room.databaseBuilder(applicationContext, UserDB::class.java, "user.db").build()
-            binding!!.btnRegister?.setOnClickListener {
-                var checkRegs = true
-                val username: String = inputLayoutUsername.getEditText()?.getText().toString()
-                val password: String = inputLayoutPassword.getEditText()?.getText().toString()
-                val email: String = inputLayoutEmail.getEditText()?.getText().toString()
-                val tanggal: String = inputLayoutTanggal.getEditText()?.getText().toString()
-                val telp: String = inputLayoutTelepon.getEditText()?.getText().toString()
-                val alamat: String = inputLayoutAlamat.getEditText()?.getText().toString()
+        db = Room.databaseBuilder(applicationContext, UserDB::class.java, "user.db").build()
+        binding!!.btnRegister?.setOnClickListener {
+            var checkRegs = true
+            val username: String = inputLayoutUsername.getEditText()?.getText().toString()
+            val password: String = inputLayoutPassword.getEditText()?.getText().toString()
+            val email: String = inputLayoutEmail.getEditText()?.getText().toString()
+            val tanggal: String = inputLayoutTanggal.getEditText()?.getText().toString()
+            val telp: String = inputLayoutTelepon.getEditText()?.getText().toString()
+            val alamat: String = inputLayoutAlamat.getEditText()?.getText().toString()
 
-                if(username.isEmpty()){
-                    inputLayoutUsername.setError("Username tidak boleh kosong")
-                    checkRegs = false
-                }
-                if(password.isEmpty()){
-                    inputLayoutPassword.setError("Password tidak boleh kosong")
-                    checkRegs = false
-                }
-                if(email.isEmpty()){
-                    inputLayoutEmail.setError("Email tidak boleh kosong")
-                    checkRegs = false
-                }
-                if(tanggal.isEmpty()){
-                    inputLayoutTanggal.setError("Tanggal tidak boleh kosong")
-                    checkRegs = false
-                }
-                if(telp.isEmpty()){
-                    inputLayoutTelepon.setError("No Telp tidak boleh kosong")
-                    checkRegs = false
-                }
-                if(alamat.isEmpty()){
-                    inputLayoutAlamat.setError("Alamat tidak boleh kosong")
-                    checkRegs = false
-                }
-                if(!checkRegs) return@setOnClickListener
-                    CoroutineScope(Dispatchers.IO).launch {
-                        db.userDao().addUser(
-                            User(0,
-                                binding!!.inputLayoutUsername.getEditText()?.getText().toString(),
-                                binding!!.inputLayoutPassword.getEditText()?.getText().toString(),
-                                binding!!.inputLayoutEmail.getEditText()?.getText().toString(),
-                                binding!!.inputLayoutTanggal.getEditText()?.getText().toString(),
-                                binding!!.inputLayoutTelepon.getEditText()?.getText().toString(),
-                                binding!!.inputLayoutAlamat.getEditText()?.getText().toString()
-                            )
-                        )
-                        finish()
-                    }
+            if(username.isEmpty()){
+                inputLayoutUsername.setError("Username tidak boleh kosong")
+                checkRegs = false
             }
-            sendRegNotification()
+            if(password.isEmpty()){
+                inputLayoutPassword.setError("Password tidak boleh kosong")
+                checkRegs = false
+            }
+            if(email.isEmpty()){
+                inputLayoutEmail.setError("Email tidak boleh kosong")
+                checkRegs = false
+            }
+            if(tanggal.isEmpty()){
+                inputLayoutTanggal.setError("Tanggal tidak boleh kosong")
+                checkRegs = false
+            }
+            if(telp.isEmpty()){
+                inputLayoutTelepon.setError("No Telp tidak boleh kosong")
+                checkRegs = false
+            }
+            if(alamat.isEmpty()){
+                inputLayoutAlamat.setError("Alamat tidak boleh kosong")
+                checkRegs = false
+            }
+            if(!checkRegs) return@setOnClickListener
+            CoroutineScope(Dispatchers.IO).launch {
+                db.userDao().addUser(
+                    User(0,
+                        binding!!.inputLayoutUsername.getEditText()?.getText().toString(),
+                        binding!!.inputLayoutPassword.getEditText()?.getText().toString(),
+                        binding!!.inputLayoutEmail.getEditText()?.getText().toString(),
+                        binding!!.inputLayoutTanggal.getEditText()?.getText().toString(),
+                        binding!!.inputLayoutTelepon.getEditText()?.getText().toString(),
+                        binding!!.inputLayoutAlamat.getEditText()?.getText().toString()
+                    )
+                )
+                finish()
+            }
+        }
+        sendRegNotification()
     }
 
     fun updateLable(myCalendar: Calendar) {
