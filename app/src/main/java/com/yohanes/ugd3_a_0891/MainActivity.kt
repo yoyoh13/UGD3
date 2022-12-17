@@ -9,6 +9,11 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.room.Room
+import com.android.volley.AuthFailureError
+import com.android.volley.RequestQueue
+import com.android.volley.Response
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
 import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
 import com.yohanes.ugd3_a_0891.databinding.ActivityMainBinding
@@ -92,13 +97,13 @@ class MainActivity : AppCompatActivity() {
                             val responseBody =
                                 String(error.networkResponse.data, StandardCharsets.UTF_8)
                             val errors = JSONObject(responseBody)
-                            Toasty.error(
-                                this@MainActivity,
+                            Toast.makeText(
+                                this,
                                 errors.getString("message"),
                                 Toast.LENGTH_SHORT
                             ).show()
                         } catch (e: java.lang.Exception) {
-                            Toasty.error(this@MainActivity, "Login Gagal!!", Toast.LENGTH_SHORT, true).show();
+                            Toast.makeText(this, "Login Gagal!!", Toast.LENGTH_SHORT).show();
                         }
                     }) {
                 @Throws(AuthFailureError::class)

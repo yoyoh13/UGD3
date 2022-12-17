@@ -21,6 +21,10 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.room.Room
+import com.android.volley.AuthFailureError
+import com.android.volley.RequestQueue
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
 import com.google.android.material.textfield.TextInputLayout
 import com.itextpdf.barcodes.BarcodeQRCode
 import com.itextpdf.io.image.ImageDataFactory
@@ -216,7 +220,7 @@ class NextActivity : AppCompatActivity() {
         document.setMargins(5f, 5f, 5f, 5f)
         @SuppressLint("UseCompatLoadingForDrawables") val d = getDrawable(R.drawable.kost)
 
-        //penambahan gambar pada Gambar atas
+        //Tambah Gambar
         val bitmap = (d as BitmapDrawable?)!!.bitmap
         val stream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
@@ -231,7 +235,7 @@ class NextActivity : AppCompatActivity() {
                  Informasi Pengguna
                  """.trimIndent()).setTextAlignment(TextAlignment.CENTER).setFontSize(12f)
 
-        //proses pembuatan table
+        //Proses pembuatan table
         val width = floatArrayOf(100f,100f)
         val table = Table(width)
 
@@ -255,7 +259,7 @@ class NextActivity : AppCompatActivity() {
         table.addCell(Cell().add(Paragraph("Pukul Pembuatan")))
         table.addCell(Cell().add(Paragraph(LocalTime.now().format(timeFormatter))))
 
-        //pembuatan QR CODE secara generate dengan bantuan IText 7
+        //Pembuatan QR CODE secara generate menggunakan IText 7
         val barcodeQRCode = BarcodeQRCode(
             """
                     $username
