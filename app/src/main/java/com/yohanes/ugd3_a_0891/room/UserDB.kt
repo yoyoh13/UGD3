@@ -10,11 +10,14 @@ import androidx.room.RoomDatabase
     version = 1
 )
 abstract class UserDB: RoomDatabase(){
-    abstract fun userDao(): UserDao
+    abstract fun UserDao(): UserDao
+    abstract fun KostDAO() : KostDao
+
     companion object {
         @Volatile
         private var instance: UserDB? = null
         private val LOCK = Any()
+
         operator fun invoke(context: Context) = instance ?: synchronized(LOCK) {
             instance ?: buildDatabase(context).also {
                 instance = it

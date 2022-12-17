@@ -1,55 +1,89 @@
 package com.yohanes.ugd3_a_0891
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Environment
 import android.view.View
 import android.view.WindowManager
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.room.Room
 import com.google.android.material.textfield.TextInputLayout
+import com.itextpdf.barcodes.BarcodeQRCode
+import com.itextpdf.io.image.ImageDataFactory
+import com.itextpdf.io.source.ByteArrayOutputStream
+import com.itextpdf.kernel.colors.ColorConstants
+import com.itextpdf.kernel.geom.PageSize
+import com.itextpdf.kernel.pdf.PdfDocument
+import com.itextpdf.kernel.pdf.PdfWriter
+import com.itextpdf.layout.Document
+import com.itextpdf.layout.element.Cell
+import com.itextpdf.layout.element.Image
+import com.itextpdf.layout.element.Paragraph
+import com.itextpdf.layout.element.Table
+import com.itextpdf.layout.property.HorizontalAlignment
+import com.itextpdf.layout.property.TextAlignment
 import com.yohanes.ugd3_a_0891.databinding.ActivityNextBinding
 import com.yohanes.ugd3_a_0891.room.UserDB
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.json.JSONObject
+import java.io.File
+import java.io.FileNotFoundException
+import java.io.FileOutputStream
+import java.nio.charset.StandardCharsets
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 import com.yohanes.ugd3_a_0891.room.User as User
 
 class NextActivity : AppCompatActivity() {
 
-    private var binding: ActivityNextBinding? = null
+    private lateinit var binding: ActivityNextBinding
     private lateinit var db: UserDB
 
     private val registerNotification = "register_notification"
     private val regNotivication = 1
+    private var queue: RequestQueue? = null
 
-    private lateinit var inputLayoutUsername: TextInputLayout
-    private lateinit var inputLayoutPassword: TextInputLayout
-    private lateinit var inputLayoutEmail: TextInputLayout
-    private lateinit var inputLayoutTanggal: TextInputLayout
-    private lateinit var inputLayoutTelepon: TextInputLayout
-    private lateinit var inputLayoutAlamat: TextInputLayout
+//    private lateinit var inputLayoutUsername: TextInputLayout
+//    private lateinit var inputLayoutPassword: TextInputLayout
+//    private lateinit var inputLayoutEmail: TextInputLayout
+//    private lateinit var inputLayoutTanggal: TextInputLayout
+//    private lateinit var inputLayoutTelepon: TextInputLayout
+//    private lateinit var inputLayoutAlamat: TextInputLayout
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        queue = Volley.newRequestQueue(this)
         binding = ActivityNextBinding.inflate(layoutInflater)
         val view = binding!!.root
         setContentView(view)
+
         val myCalendar = Calendar.getInstance()
 
         createRegNotification()
+
+        binding.btnRegister.setOnClickListener {
+            createUser()
+        }
 
         val datePicker = DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
             myCalendar.set(Calendar.YEAR, year)
@@ -63,67 +97,63 @@ class NextActivity : AppCompatActivity() {
                 myCalendar.get((Calendar.MONTH)),
                 myCalendar.get(Calendar.DAY_OF_MONTH)).show()
         }
+    }
 
-        inputLayoutUsername = findViewById(R.id.inputLayoutUsername)
-        inputLayoutPassword = findViewById(R.id.inputLayoutPassword)
-        inputLayoutEmail = findViewById(R.id.inputLayoutEmail)
-        inputLayoutTanggal = findViewById(R.id.inputLayoutTanggal)
-        inputLayoutTelepon = findViewById(R.id.inputLayoutTelepon)
-        inputLayoutAlamat = findViewById(R.id.inputLayoutAlamat)
+    private fun createUser(){
+        val user = User(
+            binding.tietUsername.text.toString(),
+            binding.tietPassword.text.toString(),
+            binding.tietEmail.text.toString(),
+            binding.tietTgl.text.toString(),
+            binding.tietTelp.text.toString(),
+            binding.tietAlamat.text.toString()
+        )
+        val stringRequest: StringRequest =
+            object: StringRequest(Method.POST, UserApi.ADD_URL, Response.Listener { response ->
+                Toast.makeText(this, "Data berhasil ditambahkan!", Toast.LENGTH_SHORT).show();
+                sendRegNotification()
 
-
-
-
-        db = Room.databaseBuilder(applicationContext, UserDB::class.java, "user.db").build()
-        binding!!.btnRegister?.setOnClickListener {
-            var checkRegs = true
-            val username: String = inputLayoutUsername.getEditText()?.getText().toString()
-            val password: String = inputLayoutPassword.getEditText()?.getText().toString()
-            val email: String = inputLayoutEmail.getEditText()?.getText().toString()
-            val tanggal: String = inputLayoutTanggal.getEditText()?.getText().toString()
-            val telp: String = inputLayoutTelepon.getEditText()?.getText().toString()
-            val alamat: String = inputLayoutAlamat.getEditText()?.getText().toString()
-
-            if(username.isEmpty()){
-                inputLayoutUsername.setError("Username tidak boleh kosong")
-                checkRegs = false
-            }
-            if(password.isEmpty()){
-                inputLayoutPassword.setError("Password tidak boleh kosong")
-                checkRegs = false
-            }
-            if(email.isEmpty()){
-                inputLayoutEmail.setError("Email tidak boleh kosong")
-                checkRegs = false
-            }
-            if(tanggal.isEmpty()){
-                inputLayoutTanggal.setError("Tanggal tidak boleh kosong")
-                checkRegs = false
-            }
-            if(telp.isEmpty()){
-                inputLayoutTelepon.setError("No Telp tidak boleh kosong")
-                checkRegs = false
-            }
-            if(alamat.isEmpty()){
-                inputLayoutAlamat.setError("Alamat tidak boleh kosong")
-                checkRegs = false
-            }
-            if(!checkRegs) return@setOnClickListener
-            CoroutineScope(Dispatchers.IO).launch {
-                db.userDao().addUser(
-                    User(0,
-                        binding!!.inputLayoutUsername.getEditText()?.getText().toString(),
-                        binding!!.inputLayoutPassword.getEditText()?.getText().toString(),
-                        binding!!.inputLayoutEmail.getEditText()?.getText().toString(),
-                        binding!!.inputLayoutTanggal.getEditText()?.getText().toString(),
-                        binding!!.inputLayoutTelepon.getEditText()?.getText().toString(),
-                        binding!!.inputLayoutAlamat.getEditText()?.getText().toString()
-                    )
-                )
+                val returnIntent = Intent()
+                setResult(RESULT_OK, returnIntent)
                 finish()
+
+
+            }, Response.ErrorListener { error ->
+
+                try{
+                    val responseBody = String(error.networkResponse.data, StandardCharsets.UTF_8)
+                    val errors = JSONObject(responseBody)
+                    Toast.makeText(
+                        this,
+                        errors.getString("message"),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } catch (e: Exception){
+                    Toast.makeText(this,"Register Gagal!!", Toast.LENGTH_SHORT).show()
+                }
+            }){
+                @Throws(AuthFailureError::class)
+                override fun getHeaders(): Map<String, String> {
+                    val headers = HashMap<String, String>()
+                    headers["Accept"] = "application/json"
+                    return headers
+                }
+
+                @Throws(AuthFailureError::class)
+                override fun getParams(): MutableMap<String, String> {
+                    val params = HashMap<String, String>()
+                    params["username"] = user.username
+                    params["password"] = user.password
+                    params["email"] = user.email
+                    params["tglLahir"] = user.tglLahir
+                    params["telepon"] = user.telepon
+                    params["Alamat"] = user.Alamat
+
+                    return params
+                }
             }
-        }
-        sendRegNotification()
+
+        queue!!.add(stringRequest)
     }
 
     fun updateLable(myCalendar: Calendar) {
@@ -166,6 +196,89 @@ class NextActivity : AppCompatActivity() {
         with(NotificationManagerCompat.from(this)){
             notify(regNotivication, builder.build())
         }
+    }
+
+    @SuppressLint("ObsoleteSdkInt")
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    @Throws(
+        FileNotFoundException::class
+    )
+
+    private fun createPdf(username: String, password: String, email: String, tglLahir: String, telepon: String, Alamat: String) {
+        val pdfPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString()
+        val file = File(pdfPath, "Member_Healing.pdf")
+        FileOutputStream(file)
+
+        val writer = PdfWriter(file)
+        val pdfDocument = PdfDocument(writer)
+        val document = Document(pdfDocument)
+        pdfDocument.defaultPageSize = PageSize.A4
+        document.setMargins(5f, 5f, 5f, 5f)
+        @SuppressLint("UseCompatLoadingForDrawables") val d = getDrawable(R.drawable.kost)
+
+        //penambahan gambar pada Gambar atas
+        val bitmap = (d as BitmapDrawable?)!!.bitmap
+        val stream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+        val bitmapData = stream.toByteArray()
+        val imageData = ImageDataFactory.create(bitmapData)
+        val image = Image(imageData)
+        val namapengguna = Paragraph("Identitas").setBold().setFontSize(24f)
+            .setTextAlignment(TextAlignment.CENTER)
+        val group = Paragraph(
+            """
+                 Berikut adalah 
+                 Informasi Pengguna
+                 """.trimIndent()).setTextAlignment(TextAlignment.CENTER).setFontSize(12f)
+
+        //proses pembuatan table
+        val width = floatArrayOf(100f,100f)
+        val table = Table(width)
+
+        table.setHorizontalAlignment(HorizontalAlignment.CENTER)
+        table.addCell(Cell().add(Paragraph("Nama Pengguna")))
+        table.addCell(Cell().add(Paragraph(username)))
+        table.addCell(Cell().add(Paragraph("Tanggal Lahir")))
+        table.addCell(Cell().add(Paragraph(tglLahir)))
+        table.addCell(Cell().add(Paragraph("Email")))
+        table.addCell(Cell().add(Paragraph(email)))
+        table.addCell(Cell().add(Paragraph("Nomor Telepon")))
+        table.addCell(Cell().add(Paragraph(telepon)))
+        table.addCell(Cell().add(Paragraph("Alamat")))
+        table.addCell(Cell().add(Paragraph(Alamat)))
+        table.addCell(Cell().add(Paragraph("Password")))
+        table.addCell(Cell().add(Paragraph(password)))
+        val dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+        table.addCell(Cell().add(Paragraph("Tanggal Buat PDF")))
+        table.addCell(Cell().add(Paragraph(LocalDate.now().format(dateTimeFormatter))))
+        val timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss a")
+        table.addCell(Cell().add(Paragraph("Pukul Pembuatan")))
+        table.addCell(Cell().add(Paragraph(LocalTime.now().format(timeFormatter))))
+
+        //pembuatan QR CODE secara generate dengan bantuan IText 7
+        val barcodeQRCode = BarcodeQRCode(
+            """
+                    $username
+                    $tglLahir
+                    $email
+                    $telepon
+                    $Alamat
+                    $password
+                    ${LocalDate.now().format(dateTimeFormatter)}
+                    ${LocalTime.now().format(timeFormatter)}
+                    """.trimIndent())
+        val qrCodeObject = barcodeQRCode.createFormXObject(ColorConstants.BLACK, pdfDocument)
+        val qrCodeImage = Image(qrCodeObject).setWidth(80f).setHorizontalAlignment(
+            HorizontalAlignment.CENTER)
+
+        document.add(image)
+        document.add(namapengguna)
+        document.add(group)
+        document.add(table)
+        document.add(qrCodeImage)
+
+        document.close()
+        Toast.makeText(this, "PDF Berhasil dibuat!", Toast.LENGTH_SHORT).show();
     }
 
 }
