@@ -23,6 +23,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.room.Room
 import com.android.volley.AuthFailureError
 import com.android.volley.RequestQueue
+import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.google.android.material.textfield.TextInputLayout
@@ -40,6 +41,7 @@ import com.itextpdf.layout.element.Paragraph
 import com.itextpdf.layout.element.Table
 import com.itextpdf.layout.property.HorizontalAlignment
 import com.itextpdf.layout.property.TextAlignment
+import com.yohanes.ugd3_a_0891.api.UserAPI
 import com.yohanes.ugd3_a_0891.databinding.ActivityNextBinding
 import com.yohanes.ugd3_a_0891.room.UserDB
 import kotlinx.coroutines.CoroutineScope
@@ -113,7 +115,7 @@ class NextActivity : AppCompatActivity() {
             binding.tietAlamat.text.toString()
         )
         val stringRequest: StringRequest =
-            object: StringRequest(Method.POST, UserApi.ADD_URL, Response.Listener { response ->
+            object: StringRequest(Method.POST, UserAPI.ADD_URL, Response.Listener { response ->
                 Toast.makeText(this, "Data berhasil ditambahkan!", Toast.LENGTH_SHORT).show();
                 sendRegNotification()
 
@@ -164,11 +166,6 @@ class NextActivity : AppCompatActivity() {
         val myFormat = "dd/mm/yyyy"
         val sdf = SimpleDateFormat(myFormat, Locale.UK)
         binding!!.inputLayoutTanggal.getEditText()?.setText(sdf.format((myCalendar.time)))
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        binding = null
     }
 
     private fun createRegNotification(){

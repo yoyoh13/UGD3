@@ -5,6 +5,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -16,7 +17,9 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
+import com.yohanes.ugd3_a_0891.api.UserAPI
 import com.yohanes.ugd3_a_0891.databinding.ActivityMainBinding
+import com.yohanes.ugd3_a_0891.models.User
 import com.yohanes.ugd3_a_0891.room.UserDB
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -55,7 +58,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        btnLogin.setOnClickListener {
+        btnLogin.setOnClickListener (View.OnClickListener {
             var checkLogin = true
             val username: String = inputUsername.getEditText()?.getText().toString()
             val password: String = inputPassword.getEditText()?.getText().toString()
@@ -71,7 +74,7 @@ class MainActivity : AppCompatActivity() {
 //            }
 
             val stringRequest: StringRequest = object :
-                StringRequest(Method.POST, UserApi.LOGIN_URL,
+                StringRequest(Method.POST, UserAPI.LOGIN_URL,
                     Response.Listener { response ->
                         val gson = Gson()
 
