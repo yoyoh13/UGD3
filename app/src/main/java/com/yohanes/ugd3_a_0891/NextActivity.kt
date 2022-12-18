@@ -12,21 +12,15 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
-import android.view.View
-import android.view.WindowManager
-import android.widget.EditText
-import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.room.Room
 import com.android.volley.AuthFailureError
 import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-import com.google.android.material.textfield.TextInputLayout
 import com.itextpdf.barcodes.BarcodeQRCode
 import com.itextpdf.io.image.ImageDataFactory
 import com.itextpdf.io.source.ByteArrayOutputStream
@@ -44,9 +38,6 @@ import com.itextpdf.layout.property.TextAlignment
 import com.yohanes.ugd3_a_0891.api.UserAPI
 import com.yohanes.ugd3_a_0891.databinding.ActivityNextBinding
 import com.yohanes.ugd3_a_0891.room.UserDB
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.io.File
 import java.io.FileNotFoundException
@@ -74,7 +65,6 @@ class NextActivity : AppCompatActivity() {
 //    private lateinit var inputLayoutTanggal: TextInputLayout
 //    private lateinit var inputLayoutTelepon: TextInputLayout
 //    private lateinit var inputLayoutAlamat: TextInputLayout
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -153,7 +143,7 @@ class NextActivity : AppCompatActivity() {
                     params["email"] = user.email
                     params["tglLahir"] = user.tglLahir
                     params["telepon"] = user.telepon
-                    params["Alamat"] = user.Alamat
+                    params["Alamat"] = user.alamat
 
                     return params
                 }

@@ -11,7 +11,7 @@ import androidx.room.RoomDatabase
 )
 abstract class UserDB: RoomDatabase(){
     abstract fun UserDao(): UserDao
-    abstract fun KostDAO() : KostDao
+    abstract fun KostDao() : KostDao
 
     companion object {
         @Volatile
